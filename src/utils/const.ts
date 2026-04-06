@@ -181,12 +181,12 @@ export const PROVINCE_FILL_COLOR = '#47b8e0';
 export const COUNTRY_FILL_COLOR = dark_vanilla;
 
 // Static color constants
-export const RUN_COLOR_LIGHT = '#d8d8d8';
-export const RUN_COLOR_DARK ='#d8d8d8';
+export const RUN_COLOR_LIGHT = '#ff0000';
+export const RUN_COLOR_DARK ='#00ff00';
 
 // Single run animation colors
-export const SINGLE_RUN_COLOR_LIGHT = '#ff0000'; // Green for light theme
-export const SINGLE_RUN_COLOR_DARK = '#00ff00'; // Red for dark theme
+export const SINGLE_RUN_COLOR_LIGHT = '#00ffff'; // Green for light theme
+export const SINGLE_RUN_COLOR_DARK = '#00ffff'; // Red for dark theme
 
 // Helper function to get theme-aware RUN_COLOR
 export const getRuntimeRunColor = (): string => {
