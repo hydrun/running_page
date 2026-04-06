@@ -98,10 +98,10 @@ def filter_out(polyline_str):
     pl = polyline.decode(polyline_str)
     if not pl:
         return polyline_str
-
-    new_pl = start_end_hiding(pl, IGNORE_START_END_RANGE)
-    new_pl = range_hiding(new_pl, IGNORE_POLYLINE, IGNORE_RANGE)
-
+    # 注释掉首尾裁剪逻辑
+    # new_pl = start_end_hiding(pl, IGNORE_START_END_RANGE)
+    # new_pl = range_hiding(new_pl, IGNORE_POLYLINE, IGNORE_RANGE)
+    new_pl = pl  # 直接使用原始轨迹
     if not new_pl:
         return
     return polyline.encode(new_pl)
