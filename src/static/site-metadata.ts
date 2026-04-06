@@ -21,7 +21,7 @@ const data: ISiteMetadataResult = {
   description: '我的跑步记录',
   navLinks: [
     {
-      name: 'Summary',
+      name: '统计',
       url: `${getBasePath()}/summary`,
     },
     {
