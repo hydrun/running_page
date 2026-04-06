@@ -71,11 +71,11 @@ const Header = () => {
             </picture>*/}
                {/* 字符 Logo 代码 */}
     <div 
-      className="h-32 w-32 rounded-full flex items-center justify-center"
+      className="h-16 w-16 rounded-full flex items-center justify-center"
       style={{
   background: 'transparent',
   color: '#00ff00', // 改为白色字符（适配深色页面背景）
-  fontSize: '28px',
+  fontSize: '32px',
   fontWeight: 'bold',
   textShadow: '0 0 4px #000', // 黑色文字阴影，增强可读性
 }}
