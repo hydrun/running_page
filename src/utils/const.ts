@@ -66,8 +66,8 @@ const CHINESE_LOCATION_INFO_MESSAGE_FIRST =
 const CHINESE_LOCATION_INFO_MESSAGE_SECOND = '不要停下来，不要停下奔跑的脚步';
 
 const INFO_MESSAGE = IS_CHINESE ? CHINESE_INFO_MESSAGE : ENGLISH_INFO_MESSAGE;
-const FULL_MARATHON_RUN_TITLE = IS_CHINESE ? '全程马拉松' : 'Full Marathon';
-const HALF_MARATHON_RUN_TITLE = IS_CHINESE ? '半程马拉松' : 'Half Marathon';
+const FULL_MARATHON_RUN_TITLE = IS_CHINESE ? '马拉松' : 'Marathon';
+const HALF_MARATHON_RUN_TITLE = IS_CHINESE ? '长距离' : 'LSD';
 const MORNING_RUN_TITLE = IS_CHINESE ? '清晨跑步' : 'Morning Run';
 const MIDDAY_RUN_TITLE = IS_CHINESE ? '午间跑步' : 'Midday Run';
 const AFTERNOON_RUN_TITLE = IS_CHINESE ? '午后跑步' : 'Afternoon Run';
