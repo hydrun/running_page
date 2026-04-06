@@ -69,18 +69,17 @@ const Header = () => {
             {/* <picture>
               <img className="h-16 w-16 rounded-full" alt="logo" src={logo} />
             </picture>*/}
-               {/* 字符 Logo 代码 */}
-    <div 
-      className="h-16 w-16 rounded-full flex items-center justify-center"
-      style={{
-  background: 'transparent',
-  color: '#00ff00', // 改为白色字符（适配深色页面背景）
-  fontSize: '32px',
-  fontWeight: 'bold',
-  textShadow: '0 0 4px #000', // 黑色文字阴影，增强可读性
-}}
-    >
-      {logo}
+               {/* 取消容器后的代码（直接显示 emoji） */}
+<span 
+  style={{
+    color: '#ffffff', // 白色字符
+    fontSize: '48px', // emoji 大小（可自行调整）
+      // 可选：添加少量边距，避免和导航文字贴太近
+    marginRight: '8px', 
+  }}
+>
+  {logo} {/* 如 🏃/R/🔥🏃 */}
+</span>
     </div>
           </Link>
         </div>
