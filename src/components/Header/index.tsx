@@ -63,26 +63,25 @@ const Header = () => {
   return (
     <>
       <nav className="mx-auto mt-12 flex w-full min-w-max max-w-screen-2xl items-center justify-between pl-6 lg:px-16">
+        {/* 左侧 LOGO */}
         <div className="w-1/4">
           <Link to={siteUrl}>
-           {/* 注释掉图片 Logo：改用字符 Logo*/}
-            {/* <picture>
-              <img className="h-16 w-16 rounded-full" alt="logo" src={logo} />
-            </picture>*/}
-               {/* 取消容器后的代码（直接显示 emoji） */}
-<span 
-  style={{
-    color: '#ffffff', // 白色字符
-    fontSize: '48px', // emoji 大小（可自行调整）
-      // 可选：添加少量边距，避免和导航文字贴太近
-    marginRight: '8px', 
-  }}
->
-  {logo} {/* 如 🏃/R/🔥🏃 */}
-</span>
-    </div>
+            {/* 你的 Emoji Logo 样式 */}
+            <span 
+              style={{
+                color: '#ffffff',
+                fontSize: '48px',
+                marginRight: '8px',
+                display: 'inline-block',
+                lineHeight: '1',
+              }}
+            >
+              {logo}
+            </span>
           </Link>
         </div>
+
+        {/* 右侧导航 */}
         <div className="flex w-3/4 items-center justify-end text-right">
           {navLinks.map((n, i) => (
             <a
@@ -93,6 +92,8 @@ const Header = () => {
               {n.name}
             </a>
           ))}
+
+          {/* 主题切换按钮 */}
           <div className="ml-4 flex items-center space-x-2">
             <button
               type="button"
