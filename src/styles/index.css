@@ -89,7 +89,7 @@
 }
 
 [data-theme='dark'] {
-  /* const nike = 'rgb(224,237,94)'; */
+  /* const nike = 'rgb(0,255,0)'; */
   --color-brand: #e0ed5e;
   --color-secondary: #ccd94a;
   --color-bg: var(--color-neutral-900);
