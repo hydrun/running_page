@@ -1,11 +1,39 @@
-# 替换 Nominatim 为高德逆地理编码 API，解决超时问题
-import sys
+# ===================== 第一步：全局拦截 Nominatim 请求（核心新增）=====================
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+from unittest.mock import Mock
+
+# 定义拦截适配器：所有指向 nominatim.openstreetmap.org 的请求直接返回模拟结果
+class BlockNominatimAdapter(HTTPAdapter):
+    def send(self, request, **kwargs):
+        if "nominatim.openstreetmap.org" in request.url:
+            # 模拟成功响应，返回空地址或固定「中国」，避免超时
+            mock_response = Mock()
+            mock_response.status_code = 200
+            mock_response.json = lambda: {"display_name": "中国"}
+            mock_response.text = '{"display_name": "中国"}'
+            return mock_response
+        # 其他请求正常发送（如高德 API）
+        return super().send(request, **kwargs)
+
+# 给 requests 全局挂载拦截适配器，彻底阻断 Nominatim 请求
+session = requests.Session()
+adapter = BlockNominatimAdapter(
+    max_retries=Retry(total=0, connect=0, read=0, redirect=0)  # 禁用重试，避免无效请求
+)
+session.mount("https://", adapter)
+session.mount("http://", adapter)
+# 替换 requests.get/post 为拦截后的 session 方法，确保所有请求都被拦截
+requests.get = session.get
+requests.post = session.post
+
+# ===================== 第二步：高德 API 配置（保留原有逻辑）=====================
+import sys
 import json
 import time
 from datetime import datetime
 import pytz
-from unittest.mock import Mock
 
 try:
     from rich import print
@@ -15,65 +43,47 @@ from generator import Generator
 from stravalib.client import Client
 from stravalib.exc import RateLimitExceeded
 
-# ===================== 高德 API 配置（核心修改）=====================
-# 替换为你自己的高德 Web 服务 API Key
+# 你的高德 Web 服务 API Key
 AMAP_API_KEY = "f32107837ead6cc930a9ea898de2844c"
-# 高德逆地理编码 API 地址（无需修改）
 AMAP_REVERSE_GEO_URL = "https://restapi.amap.com/v3/geocode/regeo"
 
 def amap_reverse_geocode(lat, lon):
-    """
-    高德逆地理编码：经纬度转真实地址（替代 Nominatim）
-    :param lat: 纬度
-    :param lon: 经度
-    :return: 格式化地址（如「北京市朝阳区XX街道」），失败返回「中国」
-    """
+    """高德逆地理编码：经纬度转真实地址"""
     try:
-        # 高德 API 参数（WGS84 坐标需指定 coordtype）
         params = {
-            "location": f"{lon},{lat}",  # 高德格式：经度,纬度
+            "location": f"{lon},{lat}",
             "key": AMAP_API_KEY,
-            "coordtype": "wgs84ll",      # 声明输入为 GPS 原始坐标（WGS84）
-            "extensions": "base",        # 仅返回基础地址，精简数据
+            "coordtype": "wgs84ll",
+            "extensions": "base",
             "batch": "false"
         }
-        # 发送请求（设置5秒超时，避免卡壳）
         response = requests.get(AMAP_REVERSE_GEO_URL, params=params, timeout=5)
-        response.raise_for_status()  # 抛出 HTTP 错误（如403/500）
+        response.raise_for_status()
         result = response.json()
         
-        # 解析高德返回结果
         if result.get("status") == "1" and "regeocode" in result:
-            # 优先返回格式化地址，无则返回「中国」
             return result["regeocode"].get("formatted_address", "中国")
         else:
             print(f"高德API返回异常: {result.get('info', '未知错误')}")
             return "中国"
     except Exception as e:
-        # 捕获所有异常（网络超时、Key错误等），兜底返回「中国」
         print(f"高德逆地理编码失败(lat={lat}, lon={lon}): {str(e)}")
         return "中国"
 
-# ===================== Mock geopy 并关联高德 API（核心修改）=====================
+# ===================== 第三步：Mock geopy（保留原有逻辑）=====================
 class MockGeoLocator:
     def reverse(self, location, *args, **kwargs):
-        """
-        重写 reverse 方法：调用高德 API 替代 Nominatim
-        :param location: 元组 (纬度, 经度)
-        """
-        lat, lon = location  # 解析传入的经纬度
-        address = amap_reverse_geocode(lat, lon)  # 调用高德 API
-        # 构造和原 Nominatim 一致的返回格式，保证原有代码兼容
+        lat, lon = location
+        address = amap_reverse_geocode(lat, lon)
         mock = Mock()
         mock.address = address
         return mock
 
-# 强制 Mock geopy，让原有代码调用高德 API
 sys.modules['geopy'] = Mock()
 sys.modules['geopy.geocoders'] = Mock()
 sys.modules['geopy.geocoders.Nominatim'] = MockGeoLocator
 
-# ===================== 原有业务逻辑（无需修改）=====================
+# ===================== 第四步：原有业务逻辑（完全保留）=====================
 def adjust_time(time, tz_name):
     tc_offset = datetime.now(pytz.timezone(tz_name)).utcoffset()
     return time + tc_offset
@@ -88,7 +98,6 @@ def adjust_timestamp_to_utc(timestamp, tz_name):
     return int(timestamp) - delta
 
 def to_date(ts):
-    """Parse ISO format timestamp string to datetime object."""
     try:
         return datetime.fromisoformat(ts)
     except ValueError:
@@ -120,7 +129,6 @@ def make_strava_client(client_id, client_secret, refresh_token):
     return client
 
 def get_strava_last_time(client, is_milliseconds=True):
-    """Get last run time from Strava, return 0 if exception."""
     try:
         activity = None
         activities = client.get_activities(limit=10)
