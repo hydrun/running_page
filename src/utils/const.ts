@@ -185,7 +185,7 @@ export const PROVINCE_FILL_COLOR = '#47b8e0';
 export const COUNTRY_FILL_COLOR = dark_vanilla;
 
 // Static color constants
-export const RUN_COLOR_LIGHT = '#ff0000';
+export const RUN_COLOR_LIGHT = '#ff4747';
 export const RUN_COLOR_DARK ='#8ce600';
 
 // Single run animation colors
